@@ -146,7 +146,19 @@ export default class {
     }
 
     bills.forEach(bill => {
+      if (index==1 && bill.status=='pending') {
+        $(`#open-bill${bill.id}`).click((e) =>
+          this.handleEditTicket(e, bill, bills)
+        );
+      }
+      if (index==2 && bill.status == 'accepted') {
+        $(`#open-bill${bill.id}`).click((e) =>
+          this.handleEditTicket(e, bill, bills)
+        );
+      }
+      if (index==3 && bill.status == 'refused') {
       $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
+      }
     })
 
     return bills
