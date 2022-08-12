@@ -44,8 +44,9 @@ export default class NewBill {
          })
          .catch((error) => console.error(error));
      } else {
-       alert('Invalid File');
-     }
+        alert('Invalid file format; Please upload .jpg,.jpeg or .png image file');
+        this.document.querySelector('#bill-proof').value = '';
+      }
   }
   
   handleSubmit = e => {
