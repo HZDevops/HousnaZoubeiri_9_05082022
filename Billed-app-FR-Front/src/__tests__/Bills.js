@@ -7,12 +7,30 @@ import userEvent from '@testing-library/user-event';
 import BillsUI from "../views/BillsUI.js"
 import Bills from "../containers/Bills.js"
 import { bills } from "../fixtures/bills.js"
-import { ROUTES_PATH} from "../constants/routes.js";
+import { ROUTES_PATH, ROUTES } from '../constants/routes.js';
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import store from "../__mocks__/store.js";
 import router from "../app/Router.js";
 
 describe("Given I am connected as an employee", () => {
+  const onNavigate = (pathname) => {
+    document.body.innerHTML = ROUTES({ pathname });
+  };
+
+  // build user interface
+  const html = BillsUI({
+    data: bills,
+  });
+  document.body.innerHTML = html;
+
+  //Init bills
+  const billsContainer = new Bills({
+    document,
+    onNavigate,
+    store: null,
+    localStorage: window.localStorage,
+  });
+
   describe('When I am on Bills Page', () => {
     test('Then bill icon in vertical layout should be highlighted', async () => {
       Object.defineProperty(window, 'localStorage', {
@@ -37,7 +55,6 @@ describe("Given I am connected as an employee", () => {
     });
 
     test('Then bills should be ordered from earliest to latest', () => {
-      document.body.innerHTML = BillsUI({ data: bills });
       const dates = screen
         .getAllByText(
           /^(19|20)\d\d[- /.](0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])$/i
@@ -51,19 +68,6 @@ describe("Given I am connected as an employee", () => {
 
   describe('When I click on the icon eye of a bill', () => {
     test('Then a modal should be opened', () => {
-      // build user interface
-      const html = BillsUI({
-        data: bills,
-      });
-      document.body.innerHTML = html;
-
-      //Init bills
-      const billsContainer = new Bills({
-        document,
-        onNavigate,
-        store: null,
-        localStorage: window.localStorage,
-      });
 
       // Mock modal comportment
       $.fn.modal = jest.fn();
@@ -77,31 +81,16 @@ describe("Given I am connected as an employee", () => {
       // Mock click event
       eye.addEventListener('click', handleClickIconEye(eye));
       userEvent.click(eye);
-
-      /*Issue below when using screen.getTestById instead of getElementById???*/
+      
       expect(handleClickIconEye).toHaveBeenCalled();
       const modale = document.getElementById('modaleFile');
       expect(modale).toBeTruthy();
     });
   });
 
- /*Issue: cannot read TypeError: Cannot read property 'addEventListener' of null
   describe('When I click on the New bill button', () => {
     test('Then I should be redirected to new bill form', () => {
-      // build user interface
-      const html = BillsUI({
-        data: bills,
-      });
-      document.body.innerHTML = html;
-
-      const billsContainer = new Bills({
-        document,
-        onNavigate,
-        store:null,
-        localStorage: window.localStorage,
-      });
-
-      const newBillButton = document.getElementById('btn-new-bill');
+      const newBillButton = screen.getByTestId('btn-new-bill');
       const handleClickNewBill = jest.fn(billsContainer.handleClickNewBill);
       
       newBillButton.addEventListener('click', handleClickNewBill);
@@ -110,7 +99,7 @@ describe("Given I am connected as an employee", () => {
       expect(handleClickNewBill).toHaveBeenCalled();
       expect(screen.getAllByText('Envoyer une note de frais')).toBeTruthy();
     });
-  });*/
+  });
 
   
 
