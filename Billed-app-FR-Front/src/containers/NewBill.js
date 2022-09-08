@@ -20,33 +20,38 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
-
+    
+    const fileExtension = fileName.split('.').pop();
+    const validExtensions = ['jpg', 'jpeg', 'png'];
     //Check valid extension image file before uploading
-    let valid_extensions = /(\.jpg|\.jpeg|\.png)$/i;
-     if (valid_extensions.test(fileName)) {
-       const formData = new FormData();
-       const email = JSON.parse(localStorage.getItem('user')).email;
-       formData.append('file', file);
-       formData.append('email', email);
-       this.store
-         .bills()
-         .create({
-           data: formData,
-           headers: {
-             noContentType: true,
-           },
-         })
-         .then(({ fileUrl, key }) => {
-           console.log(fileUrl);
-           this.billId = key;
-           this.fileUrl = fileUrl;
-           this.fileName = fileName;
-         })
-         .catch((error) => console.error(error));
-     } else {
-        alert('Invalid file format; Please upload .jpg,.jpeg or .png image file');
-        this.document.querySelector('#bill-proof').value = '';
+    if (validExtensions.includes(fileExtension)) {
+      if (e.target.classList.contains('is-invalid')) {
+        e.target.classList.remove('is-invalid');
       }
+      const formData = new FormData();
+      const email = JSON.parse(localStorage.getItem('user')).email;
+      formData.append('file', file);
+      formData.append('email', email);
+      this.store
+        .bills()
+        .create({
+          data: formData,
+          headers: {
+            noContentType: true,
+          },
+        })
+        .then(({ fileUrl, key }) => {
+          console.log(fileUrl);
+          this.billId = key;
+          this.fileUrl = fileUrl;
+          this.fileName = fileName;
+        })
+        .catch((error) => console.error(error));
+    } else {
+      alert('Invalid file format; Please upload .jpg,.jpeg or .png image file');
+      e.target.classList.add('is-invalid');
+      this.document.querySelector('#bill-proof').value = '';
+    }
   }
   
   handleSubmit = e => {
