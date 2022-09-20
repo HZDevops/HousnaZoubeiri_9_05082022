@@ -115,7 +115,7 @@ describe('Given I am connected as an employee', () => {
 
   describe('When I navigate to Bills UI', () => {
     beforeEach(() => {
-      //Ecoute (espionne) la fonction bills() de store/app
+      //Mock function listening all calls to bills
       jest.spyOn(mockStore, "bills")
       Object.defineProperty(
           window,
@@ -133,15 +133,17 @@ describe('Given I am connected as an employee', () => {
     })
     test("fetches bills from mock API GET", async () => {
       window.onNavigate(ROUTES_PATH.Bills)
-      //On attend le chargement de la page
+
+      //Wait for page upload
       await waitFor(() => screen.getByText("Mes notes de frais"))
-      //On attend le chargement du tableau des lignes notes de frais dans tbody
+      
+      //Wait for lines table "notes de frais" upload in tbody
       const tbody  = await screen.getAllByTestId("tbody")
+
       expect(tbody.length).toBeGreaterThanOrEqual(1);
     })  
 
     test('fetches bills from an API and fails with 404 message error', async () => {
-      // Exécuter une fonction donnée en paramètre
       mockStore.bills.mockImplementationOnce(() => {
         return {
           list : () =>  {
@@ -150,14 +152,13 @@ describe('Given I am connected as an employee', () => {
         }})
       window.onNavigate(ROUTES_PATH.Bills)
 
-      //Attend l'exécution de la ligne ci-dessous avant d'éxécuter la suivante
+      //Wait for the execution of the promise before going ahead
       await new Promise(process.nextTick);
       const message = await screen.getByText(/Erreur 404/)
       expect(message).toBeTruthy()
     });
 
     test("fetches messages from an API and fails with 500 message error", async () => {
-
       mockStore.bills.mockImplementationOnce(() => {
         return {
           list : () =>  {
@@ -170,8 +171,5 @@ describe('Given I am connected as an employee', () => {
       const message = await screen.getByText(/Erreur 500/)
       expect(message).toBeTruthy()
     })
-    
   }) 
-
-  
 })

@@ -21,13 +21,12 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
     
-    const fileExtension = fileName.split('.').pop();
-    const validExtensions = ['jpg', 'jpeg', 'png'];
     //Check valid extension image file before uploading
-    if (validExtensions.includes(fileExtension)) {
-      if (e.target.classList.contains('is-invalid')) {
-        e.target.classList.remove('is-invalid');
-      }
+    if (
+      file.type.includes('jpg') === true ||
+      file.type.includes('jpeg') === true ||
+      file.type.includes('png') === true
+    ) {
       const formData = new FormData();
       const email = JSON.parse(localStorage.getItem('user')).email;
       formData.append('file', file);
@@ -49,7 +48,6 @@ export default class NewBill {
         .catch((error) => console.error(error));
     } else {
       alert('Invalid file format; Please upload .jpg,.jpeg or .png image file');
-      e.target.classList.add('is-invalid');
       this.document.querySelector('#bill-proof').value = '';
     }
   }
