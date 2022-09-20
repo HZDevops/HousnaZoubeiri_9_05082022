@@ -1,8 +1,8 @@
-Comment lancer l'application en local :
+Application BILLED - Comment lancer l'application en local :
 
 1- Clonez le projet et allez au repo cloné:
 
-$ git clone https://github.com/OpenClassrooms-Student-Center/Billed-app-FR.git
+$ git clone https://github.com/HZDevops/HousnaZoubeiri_9_05082022.git
 
 
 2- Accéder au repertoire contenant le backend du projet :
