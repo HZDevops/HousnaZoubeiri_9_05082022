@@ -21,10 +21,7 @@ describe("Given I am connected as an employee", () => {
       email: 'a@a',
     })
   );
-  const onNavigate = (pathname) => {
-    document.body.innerHTML = ROUTES({ pathname });
-  };
-
+  
   describe("When I am on NewBill Page", () => {
     test('Then I should see new bill form', () => {
       document.body.innerHTML = NewBillUI();
@@ -32,20 +29,15 @@ describe("Given I am connected as an employee", () => {
     });
   })
 
-  describe('When I upload a jpg file', () => {
+  describe('When I select a jpg file', () => {
     test("Then the file should be uploaded", () => {
+      
       jest.spyOn(mockStore, 'bills');
-      Object.defineProperty(window, 'localStorage', {
-        value: localStorageMock,
-      });
-      window.localStorage.setItem(
-        'user',
-        JSON.stringify({
-        type: 'Employee',
-        email: 'a@a',
-        })
-      );
 
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
+      
       // build user interface
       document.body.innerHTML = NewBillUI();
 
@@ -59,9 +51,9 @@ describe("Given I am connected as an employee", () => {
 
       //Mock function handleChangeFile
       const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
+      const inputFile = screen.getByTestId('file');
 
       const file = new File(['file'], 'file.png', { type: 'image/png' });
-      const inputFile = screen.getByTestId('file');
 
       inputFile.addEventListener('change', handleChangeFile);
       userEvent.upload(inputFile, file);
@@ -73,6 +65,10 @@ describe("Given I am connected as an employee", () => {
 
   describe('When I submit a new form', () => {
     test('Then the handleSubmit method should be called', () => {
+      
+      const onNavigate = (pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      };
       // Init newBill
       const newBill = new NewBill({
         document,
@@ -98,20 +94,23 @@ describe("Given I am connected as an employee", () => {
 
 //Integration POST test
 describe('When I post a bill', () => {
-   jest.spyOn(mockStore, 'bills');
-   Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-   window.localStorage.setItem(
-     'user',
-     JSON.stringify({
-       type: 'Employee',
-       email: 'a@a',
-     })
-   );
-   
   test('posts bill with mock API POST', async () => {
+
+    jest.spyOn(mockStore, 'bills');
+
+    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+    window.localStorage.setItem(
+      'user',
+      JSON.stringify({
+        type: 'Employee',
+        email: 'a@a',
+      })
+    );
+
     const onNavigate = (pathname) => {
       document.body.innerHTML = ROUTES({ pathname });
     };
+
     document.body.innerHTML = NewBillUI();
 
     const newBill = new NewBill({
@@ -144,13 +143,15 @@ describe('When I post a bill', () => {
     const fileToUpload = new File(['file'], 'file.png', { type: 'image/png' });
 
     const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
-    const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-
     file.addEventListener('change', handleChangeFile);
     userEvent.upload(file, fileToUpload);
+
+    const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
     form.addEventListener('click', handleSubmit);
     userEvent.click(form);
 
     expect(handleChangeFile).toHaveBeenCalled();
+    expect(handleSubmit).toHaveBeenCalled();
+    expect(screen.getAllByText('Mes notes de frais')).toBeTruthy();
   });
 });

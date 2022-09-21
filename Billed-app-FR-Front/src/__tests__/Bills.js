@@ -13,10 +13,7 @@ import mockStore from "../__mocks__/store.js";
 import router from "../app/Router.js";
 jest.mock ('../app/store', () => mockStore)
 
-
-
 describe('Given I am connected as an employee', () => {
-
   describe('When I am on Bills Page', () => {
     test('Then bill icon in vertical layout should be highlighted', async () => {
              
@@ -52,8 +49,8 @@ describe('Given I am connected as an employee', () => {
   describe('When I click on the icon eye of a bill', () => {
     test('Then a modal should be opened', () => {
       const onNavigate = (pathname) => {
-        document.body.innerHTML = ROUTES({ pathname })
-      }
+        document.body.innerHTML = ROUTES({ pathname });
+      };
 
       Object.defineProperty(window, 'localStorage', { value: localStorageMock })
       window.localStorage.setItem('user', JSON.stringify({ type: 'Employee' }))
@@ -64,8 +61,9 @@ describe('Given I am connected as an employee', () => {
         store: null,
         localStorage: window.localStorage,
       })
-      document.body.innerHTML = BillsUI({ data: bills })
 
+      document.body.innerHTML = BillsUI({ data: bills });
+      
       // Mock modal comportment
       $.fn.modal = jest.fn();
 
@@ -87,6 +85,7 @@ describe('Given I am connected as an employee', () => {
 
   describe('When I click on the New bill button', () => {
     test('Then I should be redirected to new bill form', () => {
+      
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname })
       }
@@ -100,9 +99,11 @@ describe('Given I am connected as an employee', () => {
         store: null,
         localStorage: window.localStorage,
       })
+
       document.body.innerHTML = BillsUI({ data: bills })
 
       const newBillButton = screen.getByTestId('btn-new-bill');
+      
       const handleClickNewBill = jest.fn((e) => billsContainer.handleClickNewBill(e));
 
       newBillButton.addEventListener('click', handleClickNewBill);
@@ -113,33 +114,41 @@ describe('Given I am connected as an employee', () => {
     });
   });
 
+  //GET integration test
   describe('When I navigate to Bills UI', () => {
     beforeEach(() => {
       //Mock function listening all calls to bills
       jest.spyOn(mockStore, "bills")
+      
       Object.defineProperty(
           window,
           'localStorage',
           { value: localStorageMock }
       )
+      
       window.localStorage.setItem('user', JSON.stringify({
         type: 'Employee',
         email: "a@a"
       }))
+      
       const root = document.createElement("div")
       root.setAttribute("id", "root")
       document.body.appendChild(root)
       router()
     })
+
     test("fetches bills from mock API GET", async () => {
+      
       window.onNavigate(ROUTES_PATH.Bills)
 
       //Wait for page upload
-      await waitFor(() => screen.getByText("Mes notes de frais"))
+      await waitFor(() => screen.getByText('Mes notes de frais'))
+      const newBillButton = screen.getByText('Nouvelle note de frais');
       
       //Wait for lines table "notes de frais" upload in tbody
-      const tbody  = await screen.getAllByTestId("tbody")
+      const tbody  = await screen.getAllByTestId('tbody')
 
+      expect(newBillButton).toBeTruthy();
       expect(tbody.length).toBeGreaterThanOrEqual(1);
     })  
 
